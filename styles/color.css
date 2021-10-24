@@ -1,0 +1,27 @@
+
+.bg-dark {
+    background-color: var(--dark);
+}
+.bg-light {
+    background-color: var(--light);
+}
+.bg-blue {
+    background-color: var(--blue);
+}
+.bg-red {
+    background-color: tomato;
+}
+
+
+.clr-dark {
+    color: var(--dark);
+}
+.clr-light {
+    color: var(--light);
+}
+.clr-blue {
+    color: var(--blue);
+}
+.clr-red {
+    color: var(--red);
+}

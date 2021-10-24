@@ -1,0 +1,53 @@
+
+$breakpoints: (
+  'mobile': ('min': 0, 'max': 599px),
+  'tablet': ('min': 600px, 'max': 959px),
+  'laptop': ('min': 960px, 'max': 1263px),
+  'desktop': ('min': 1264px, 'max': 1903px),
+  'huge': ('min': 1904px),
+);
+
+.panel {
+    position: relative;
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    &--no-wrap {
+        flex-wrap: nowrap;
+    }
+    &--no-padding {
+        padding: 0;
+    }
+    &--full-height {
+        height: 100%;
+    }
+    &--half-height {
+        height: 50%;
+    }
+    > .panel-section {
+        margin: 8px;
+        padding: 8px;
+        flex: 1;
+        margin: 0;
+
+        @for $num from 1 through 12 {
+            &--col-#{$num} {
+                width: 100%;
+                flex: 0 0 calc(percentage($num / 12));
+                max-width: percentage($num / 12);
+            }
+        }
+
+        @each $breakpoint, $sizes in $breakpoints {
+            @media print, screen and (min-width: map-get($sizes, 'min'))  {
+                @for $num from 1 through 12 {
+                    &--col-#{$breakpoint}#{$num} {
+                        width: 100%;
+                        flex: 0 0 calc(percentage($num / 12));
+                        max-width: percentage($num / 12);
+                    }
+                }
+            }
+        }
+    }
+}
