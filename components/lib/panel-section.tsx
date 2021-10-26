@@ -6,6 +6,9 @@ type Props = {
     className?: string
     noMargin?: boolean
     cols?: string|number|string[]
+    direction?: 'row'|'column'
+    justify?: 'start'|'center'|'end'
+    align?: 'start'|'center'|'end'
 }
 
 export const PanelSection = ({
@@ -13,11 +16,17 @@ export const PanelSection = ({
     noMargin = false,
     style = {},
     className = '',
-    cols = []
+    cols = [],
+    direction,
+    justify,
+    align
 }: Props) => {
 
     const modifiers = blockMod('panel-section', [
         noMargin && 'no-margin',
+        !!direction && direction,
+        !!justify && `justify-${justify}`,
+        !!align && `align-${align}`,
         ...(
             typeof cols === 'string' || typeof cols === 'number'
                 ? [`col-${cols}`]

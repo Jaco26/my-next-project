@@ -2,37 +2,36 @@ import { CSSProperties } from "react"
 
 import { blockMod } from '@/utils'
 
+type Height = '100%'|'%75'|'50%'|'25%'
+
 type Props = {
     children?: React.ReactNode
-    fullHeight?: boolean
-    halfHeight?: boolean
-    noPadding?: boolean
     noWrap?: boolean
-    style?: CSSProperties
+    height?: Height
     className?: string
+    style?: CSSProperties
+    id?: string
 }
 
 export const Panel = ({
     children,
-    style = {},
     className = '',
     noWrap = false,
-    noPadding = false,
-    fullHeight = false,
-    halfHeight = false,
+    height,
+    style,
+    ...props
 }: Props) => {
 
     const modifiers = blockMod('panel', [
         noWrap && 'no-wrap',
-        noPadding && 'no-padding',
-        fullHeight && 'full-height',
-        halfHeight && 'half-height',
     ])
 
     const classes = `panel ${modifiers} ${className}`.trim()
 
+    const _style = style || height ? { height, ...style } : undefined
+
     return (
-        <div className={classes} style={style}>
+        <div className={classes}  style={_style} {...props} >
             {children}
         </div>
     )
