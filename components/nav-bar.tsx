@@ -9,11 +9,17 @@ type Link = {
     kind?: 'button'|'anchor'
 }
 
-type Props = {
-    links: Link[]
-}
 
-export const NavBar = ({ links }: Props) => {
+export const NavBar = () => {
+
+    const links: Link[] = [
+        {
+            text: 'Support The Thing',
+            href: '#',
+            target: '_blank',
+            kind: 'button'
+        },
+    ]
 
     return (
         <header className="navbar">
