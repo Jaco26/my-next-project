@@ -1,12 +1,17 @@
 import Image from 'next/image'
 
+import { blockMod } from '@/utils'
 import { useScrollProvider } from '@/providers/scroll-provider'
 
 export const SideNav = () => {
 
-    const { goTo } = useScrollProvider()
+    const { goTo, activeSection } = useScrollProvider()
 
     const sections = [
+        {
+            text: 'End the bad thing',
+            to: 'end-the-bad-thing'
+        },
         {
             text: 'Subject 1',
             to: 'subject-1'
@@ -32,11 +37,21 @@ export const SideNav = () => {
         <section className="side-nav">
             <ul className="side-nav__sections">
                 {
-                    sections.map(({ text, to }, i) =>
-                        <li key={i} className="side-nav__sections-item">
-                            <a onClick={() => goTo(to)}>{text}</a>
-                        </li>
-                    )
+                    sections.map(({ text, to }, i) => {
+                        const block = 'side-nav__sections-item'
+
+                        const modifiers = blockMod(block, [
+                            activeSection === to && 'active' 
+                        ])
+
+                        const classes = `${block} ${modifiers}`.trim()
+
+                        return (
+                            <li key={i} className={classes}>
+                                <a onClick={() => goTo(to)}>{text}</a>
+                            </li>
+                        )
+                    })
                 }
             </ul>
             <ul className="side-nav__social">

@@ -14,12 +14,16 @@
     }
     &__sections-item {
         margin: 12px 0;
+        &--active {
+            margin-right: -16px;
+            color: $red;
+            border-right: 4px solid $red;
+        }
     }
     &__social {
         position: fixed;
         bottom: 0;
         display: flex;
-        // z-index: 100;
         list-style: none;
         padding: 0 16px;
     }
