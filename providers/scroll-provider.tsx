@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react'
+import { usePrevious } from '@/utils'
 
 const NAVBAR_HEIGHT = 60
 
@@ -23,78 +24,101 @@ type Props = {
     initialActiveSection: string
 }
 
+type ScrollStateMode = 'normal'|'autoScroll'
+type ScrollStateData = { [key: string]: any }
+
+type ScrollState = {
+    mode: ScrollStateMode
+    data: ScrollStateData
+}
+
+
 export const ScrollProvider = ({ children, sectionIDs, initialActiveSection }: Props) => {
 
+    const [activeSection, setActiveSection] = useState(initialActiveSection)
+
     const [scrollY, setScrollY] = useState(0)
+    const prevScrollY = usePrevious(scrollY)
 
-    // const setScrollY = (value: number) => _setScrollY([scrollY, value])
-
-    const [clickedAndScrolling, setClickedAndScrolling] = useState(false)
+    const [scrollState, setScrollState] = useState<ScrollState>({
+        mode: 'normal',
+        data: {}
+    })
 
     let domNodes: [string, HTMLElement][] = []
 
-    // if (typeof window !== 'undefined') {
+    const getActiveSection = () => process.browser
+        ? domNodes.reduce(
+            (acc: string, [sectionID, elem]) => (
+                elem.getBoundingClientRect().top + 150 < window.innerHeight
+                    ? sectionID
+                    : acc
+            ),
+            ''
+        )
+        : initialActiveSection
+
+    const scrollHandlers = {
+        normal() {
+            const newActiveSection = getActiveSection()
+            if (newActiveSection !== activeSection) {
+                const prevScrollY = window.scrollY
+                location.hash = newActiveSection
+                window.scrollTo(0, prevScrollY)
+            }
+            setActiveSection(newActiveSection)
+        },
+        autoScroll() {
+            const { newTop, scrollDirection } = scrollState.data
+            const newActiveSection = getActiveSection()
+            const arrivedAtScrollDestination = () => Math.abs(window.scrollY - newTop) <= 1
+            const scrollCanceled = () => scrollDirection === 'up'
+                ? scrollY > prevScrollY
+                : scrollY < prevScrollY
+            if (arrivedAtScrollDestination() || scrollCanceled()) {
+                setScrollState({
+                    mode: 'normal',
+                    data: {}
+                })
+                const prevScrollY = window.scrollY
+                location.hash = newActiveSection
+                window.scrollTo(0, prevScrollY)
+            }
+            setActiveSection(newActiveSection)
+        },
+    }
+
+
+    const onWindowLoad = () => {
+        setScrollY(window.scrollY)
+    }
+
+    const onWindowScroll = () => {
+        setScrollY(window.scrollY)
+        scrollHandlers[scrollState.mode]()
+    }
+
     if (process.browser) {
         // set scrollY state to window scrollY on page load and scroll
         useEffect(() => {
-            window.addEventListener('load', () => setScrollY(window.scrollY))
-            window.addEventListener('scroll', () => setScrollY(window.scrollY))
-
+            window.addEventListener('load', onWindowLoad)
+            window.addEventListener('scroll', onWindowScroll)
+            
+            return () => {
+                window.removeEventListener('laod', onWindowLoad)
+                window.removeEventListener('scroll', onWindowScroll)
+            }
         })
+
         domNodes = sectionIDs.map(sectionID => [
             sectionID,
             window.document.getElementById(sectionID) as HTMLElement
         ])
     }
 
-
-    const activeSection = process.browser
-        ? useMemo(
-            () => domNodes.reduce(
-                (acc: string, [sectionID, elem]) => (
-                    elem.getBoundingClientRect().top + 150 < window.innerHeight
-                        ? sectionID
-                        : acc
-                ),
-                ''
-            ),
-            [scrollY]
-        )
-        : initialActiveSection
-
-
-    // when computed `activeSection` value changes, update the document.cookie.hash so that server render
-    // has access to activeSection state and avoids invariant
     useEffect(
         () => {
             setHashCookie(activeSection)
-        },
-        [activeSection]
-    )
-
-
-    // // when clickedAndScrolling state changes to `true`, monitor scrollY state changes over time to determine if
-    // // the user has intervened in the `goTo`-invoked auto scroll process. If the user has intervened, setClickedAndScrolling(false)
-    // useEffect(
-    //     () => {
-    //         if (clickedAndScrolling) {
-    //             console.log('check scroll')
-
-    //         }
-    //     },
-    //     [clickedAndScrolling]
-    // )
-
-
-    // Watch for changes in `activeSection` state and set location hash accordingly
-    useEffect(
-        () => {
-            if (!clickedAndScrolling) {
-                const prevScrollY = window.scrollY
-                location.hash = activeSection
-                window.scrollTo(0, prevScrollY)
-            }
-
         },
         [activeSection]
     )
@@ -122,33 +146,18 @@ export const ScrollProvider = ({ children, sectionIDs, initialActiveSection }: P
             const target = document.getElementById(id) as HTMLElement
             const parentElem = target.parentElement as HTMLElement
             const newTop = target.getBoundingClientRect().top - parentElem.getBoundingClientRect().top - NAVBAR_HEIGHT
-            
-            const initScrollY = window.scrollY
-            const scrollDirection = initScrollY > newTop ? 'up' : 'down'
-            console.log('scroll direction:', scrollDirection)
-
-            setClickedAndScrolling(true)
-
-            window.scrollTo({ top: newTop, behavior: 'smooth' })
-
-            const arrivedAtScrollDestination = () => Math.abs(window.scrollY - newTop) <= 2 // account for some variation in box sizing between browsers
-
-            const scrollCanceled = () => scrollDirection === 'up'
-                ? false
-                : false
-
-            function onScroll() {
-                if (scrollCanceled()) {
-                    
-                } else if (arrivedAtScrollDestination()) {
-                    window.location.hash = id
-                    window.scrollTo(0, newTop)
-                    window.removeEventListener('scroll', onScroll)
-                    setClickedAndScrolling(false)
+            const scrollDirection =  window.scrollY > newTop ? 'up' : 'down'
+            setScrollState({
+                mode: 'autoScroll',
+                data: {
+                    newTop,
+                    scrollDirection
                 }
-            }
-
-            window.addEventListener('scroll', onScroll)
+            })
+            window.scrollTo({
+                top: newTop,
+                behavior: 'smooth'
+            })
         },
         activeSection,
     }
