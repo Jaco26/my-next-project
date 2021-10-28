@@ -1,6 +1,8 @@
 import { blockMod } from "@/utils"
 import { HTMLAttributeAnchorTarget } from "react"
+import NextLink from 'next/link'
 
+import { Panel, PanelSection } from '@/components/lib'
 
 type Link = {
     href: string
@@ -24,34 +26,40 @@ export const NavBar = () => {
     return (
         <header className="navbar">
             <nav className="navbar__nav">
-                <a href="/#">
-                    <h1>SomeFlashyTitle</h1>
-                </a>
-                <ul className="navbar__links">
-                    {
-                        links.map(({ href, text, target, kind }, i) => {
+       
 
-                            const modifiers = blockMod('navbar__link', [
-                                !!kind && kind
-                            ])
+                        <div style={{cursor: 'pointer'}}>
+                            <NextLink href="/">
+                                <h1>SomeFlashyTitle</h1>
+                            </NextLink>
+                        </div>
+                        <ul className="navbar__links">
+                            {
+                                links.map(({ href, text, target, kind }, i) => {
 
-                            const classes = `navbar__link ${modifiers}`.trim()
+                                    const modifiers = blockMod('navbar__link', [
+                                        !!kind && kind
+                                    ])
 
-                            return (
-                                <li key={i} className={classes}>
-                                    {
-                                        kind === 'button'
-                                            ? <a href={href} target={target}>
-                                                <button >{text}</button>
-                                              </a>
-                                            : <a href={href} target={target}>{text}</a>
-                                    }
-                                </li>
-                                )
-                        })
-                    }
-                </ul>
+                                    const classes = `navbar__link ${modifiers}`.trim()
+
+                                    return (
+                                        <li key={i} className={classes}>
+                                            {
+                                                kind === 'button'
+                                                    ? <a href={href} target={target}>
+                                                        <button >{text}</button>
+                                                    </a>
+                                                    : <a href={href} target={target}>{text}</a>
+                                            }
+                                        </li>
+                                        )
+                                })
+                            }
+                        </ul>
+
             </nav>
         </header>
+        
     )
 }

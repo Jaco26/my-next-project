@@ -8,6 +8,22 @@
     font-weight: 200;
 }
 
+.text-align-center {
+    text-align: center;
+}
+.text-align-start {
+    text-align: start;
+}
+.text-align-end {
+    text-align: end;
+}
+.text-align-justify {
+    text-align: justify;
+}
+
+.text-xx-large {
+    font-size: 96px;
+}
 .text-x-large {
     font-size: 64px;
 }

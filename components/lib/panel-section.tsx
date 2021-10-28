@@ -4,33 +4,40 @@ type Props = {
     children?: React.ReactNode
     style?: React.CSSProperties
     className?: string
-    noMargin?: boolean
     cols?: string|number|string[]
+    offset?: string|number|string[]
     direction?: 'row'|'column'
-    justify?: 'start'|'center'|'end'
+    justify?: 'start'|'center'|'end'|'between'
     align?: 'start'|'center'|'end'
+    shrink?: boolean
 }
 
 export const PanelSection = ({
     children,
-    noMargin = false,
     style = {},
     className = '',
     cols = [],
+    offset = [],
     direction,
     justify,
-    align
+    align,
+    shrink = false
 }: Props) => {
 
     const modifiers = blockMod('panel-section', [
-        noMargin && 'no-margin',
         !!direction && direction,
         !!justify && `justify-${justify}`,
         !!align && `align-${align}`,
+        shrink && 'shrink',
         ...(
             typeof cols === 'string' || typeof cols === 'number'
                 ? [`col-${cols}`]
                 : cols.map(breakpoint => `col-${breakpoint}`)
+        ),
+        ...(
+            typeof offset === 'string' || typeof offset === 'number'
+                ? [`offset-${offset}`]
+                : offset.map(breakpoint => `offset-${breakpoint}`)
         )
     ])
 

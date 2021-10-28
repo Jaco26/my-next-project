@@ -71,7 +71,7 @@ export const ScrollProvider = ({ children, sectionIDs, initialActiveSection }: P
         autoScroll() {
             const { newTop, scrollDirection } = scrollState.data
             const newActiveSection = getActiveSection()
-            const arrivedAtScrollDestination = () => Math.abs(window.scrollY - newTop) <= 1
+            const arrivedAtScrollDestination = () => Math.abs(window.scrollY - newTop) === 1
             const scrollCanceled = () => scrollDirection === 'up'
                 ? scrollY > prevScrollY
                 : scrollY < prevScrollY
@@ -89,10 +89,6 @@ export const ScrollProvider = ({ children, sectionIDs, initialActiveSection }: P
     }
 
 
-    const onWindowLoad = () => {
-        setScrollY(window.scrollY)
-    }
-
     const onWindowScroll = () => {
         setScrollY(window.scrollY)
         scrollHandlers[scrollState.mode]()
@@ -101,11 +97,8 @@ export const ScrollProvider = ({ children, sectionIDs, initialActiveSection }: P
     if (process.browser) {
         // set scrollY state to window scrollY on page load and scroll
         useEffect(() => {
-            window.addEventListener('load', onWindowLoad)
             window.addEventListener('scroll', onWindowScroll)
-            
             return () => {
-                window.removeEventListener('laod', onWindowLoad)
                 window.removeEventListener('scroll', onWindowScroll)
             }
         })
@@ -123,8 +116,8 @@ export const ScrollProvider = ({ children, sectionIDs, initialActiveSection }: P
         [activeSection]
     )
 
-    // correct scroll position to account for navbar height
-    // TODO: there has *got* to be a better way...
+    // // correct scroll position to account for navbar height
+    // // TODO: there has *got* to be a better way...
     if (typeof window !== 'undefined') {
         window.onload = function () {
             if (location.hash) {

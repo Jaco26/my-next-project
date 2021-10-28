@@ -22,12 +22,17 @@ $breakpoints: (
         height: 50%;
     }
     > .panel-section {
-        margin: 8px;
-        padding: 8px;
         flex: 1;
-        margin: 0;
         display: flex;
         flex-wrap: nowrap;
+        padding: 16px;
+
+        transition: all .05s ease-in-out;
+
+        &--shrink {
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
 
         &--column {
             flex-direction: column;
@@ -41,6 +46,9 @@ $breakpoints: (
         }
         &--justify-center {
             justify-content: center;
+        }
+        &--justify-between {
+            justify-content: space-between;
         }
         &--justify-end {
             justify-content: flex-end;
@@ -59,18 +67,24 @@ $breakpoints: (
         @for $num from 1 through 12 {
             &--col-#{$num} {
                 width: 100%;
-                flex: 0 0 calc(percentage($num / 12));
+                flex: 0 0 percentage($num / 12);
                 max-width: percentage($num / 12);
+            }
+            &--offset-#{$num} {
+                margin-left: percentage($num / 12);
             }
         }
 
         @each $breakpoint, $sizes in $breakpoints {
             @media print, screen and (min-width: map-get($sizes, 'min'))  {
                 @for $num from 1 through 12 {
-                    &--col-#{$breakpoint}#{$num} {
+                    &--col-#{$breakpoint}-#{$num} {
                         width: 100%;
-                        flex: 0 0 calc(percentage($num / 12));
+                        flex: 0 0 percentage($num / 12);
                         max-width: percentage($num / 12);
+                    }
+                    &--offset-#{$breakpoint}-#{$num} {
+                        margin-left: percentage($num / 12);
                     }
                 }
             }

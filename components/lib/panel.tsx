@@ -2,7 +2,7 @@ import { CSSProperties } from "react"
 
 import { blockMod } from '@/utils'
 
-type Height = '100%'|'%75'|'50%'|'25%'
+type Height = '100%'|'75%'|'50%'|'25%'
 
 type Props = {
     children?: React.ReactNode

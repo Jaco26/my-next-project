@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-import { blockMod } from '@/utils'
+import { blockMod, MyImgLoader } from '@/utils'
 import { useScrollProvider } from '@/providers/scroll-provider'
 
 export const SideNav = () => {
@@ -24,12 +24,14 @@ export const SideNav = () => {
 
     const social = [
         {
-            imgSrc: '/../public/twitter-blue.svg',
+            imgSrc: '/twitter-blue.svg',
             href: 'https://twitter.com',
+            alt: 'Twitter'
         },
         {
-            imgSrc: '/../public/fb-blue.png',
-            href: 'https://www.facebook.com'
+            imgSrc: '/fb-blue.png',
+            href: 'https://www.facebook.com',
+            alt: 'Facebook'
         },
     ]
 
@@ -56,10 +58,10 @@ export const SideNav = () => {
             </ul>
             <ul className="side-nav__social">
                 {
-                    social.map(({ imgSrc, href }, i) =>
+                    social.map(({ imgSrc, href, alt }, i) =>
                         <li key={i} className="side-nav__social-item">
                             <a href={href}>
-                                <Image src={imgSrc} height={30} width={30} />
+                                <img src={imgSrc} height="30" width="30" alt={alt} />
                             </a>
                         </li>
                     )
